@@ -5,8 +5,9 @@ set -eux
 if [[ "$#" -lt 1 || (
           ! ( ( "$1" == "firefox" && "$#" -eq 1 ) ||
               ( "$1" == "chrome" && "$#" -eq 2 && ${#2} -eq 32 ) ||
-              ( "$1" == "chromium" && "$#" -eq 2 && ${#2} -eq 32 ) ) ) ]]; then
-    echo "Usage: $0 <chrome EXTENSION_ID | chromium EXTENSION_ID | firefox>"
+              ( "$1" == "chromium" && "$#" -eq 2 && ${#2} -eq 32 ) || 
+              ( "$1" == "brave" && "$#" -eq 2 && ${#2} -eq 32 ) ) ) ]]; then
+    echo "Usage: $0 <chrome EXTENSION_ID | chromium EXTENSION_ID | brave EXTENSION_ID | firefox>"
     exit 2
 fi
     
@@ -32,6 +33,9 @@ case "$OS $BROWSER" in
         MANIFEST_LOCATION="$HOME/Library/Application Support/Google/Chrome/NativeMessagingHosts";;
     "Darwin chromium")
         MANIFEST_LOCATION="$HOME/Library/Application Support/Chromium/NativeMessagingHosts";;
+    "Darwin brave")
+        mkdir -p "$HOME/Library/Application Support/Google/Chrome/NativeMessagingHosts"
+        MANIFEST_LOCATION="$HOME/Library/Application Support/Google/Chrome/NativeMessagingHosts";;
 esac
 
 mkdir -p "$MANIFEST_LOCATION"
@@ -40,7 +44,7 @@ APP_NAME="com.rsnous.tabfs"
 EXE_PATH=$(pwd)/fs/tabfs
 
 case "$BROWSER" in
-    chrome | chromium)
+    chrome | chromium | brave)
         EXTENSION_ID=$2
         MANIFEST=$(cat <<EOF
 {
